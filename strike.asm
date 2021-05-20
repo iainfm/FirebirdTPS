@@ -66,8 +66,9 @@ osbyte  = $FFF4
 .L7983
         \ Loads encrypted data to &1400-&2FFF
 		\ Also loads decryption routine to &706 from block $1D
+		\ Re-encrypts(?) data as it goes with EOR ?&63=last value written
 		
-        JSR     L79C1
+        JSR     L79C1      \ get byte from tape?
         STA     (ZP_5D),Y  \ ?(&5D+Y) = A    \ Write encrypted byte
         EOR     ZP_63      \ A = A EOR ?&63
         STA     ZP_63      \ ?&63 = A
@@ -141,7 +142,7 @@ osbyte  = $FFF4
         BNE     L79F1
         DEC     ZP_64     \ ?&64 = ?&64 - 1
         BNE     L79EF      
-        RTS
+        RTS               \ &79FF
 
 .print_Searching                      \ Display 'Searching'
         LDX     #$03
@@ -212,7 +213,7 @@ osbyte  = $FFF4
 
 .L7A70  \ Writes main decryption key to $600 from block 0?
         \ ($5F+Y) contains current decryption byte to decrypt this?
-		\ Seems to use &79FE+Y (&79FE-&7AFD) - tamper protection?
+		\ Uses &79FE+Y (&79FE-&7AFD) to decrypt the decryption key.
 
         JSR     L79C1	
         PHA
@@ -225,9 +226,7 @@ osbyte  = $FFF4
         BNE     L7A70
         RTS
 
-        \ I don't think these get used. I thought I'd seen them being read
-		\ sequentially, but I can't repeat it. Maybe to throw off casual hackers?
-		\ &7A81
+		\ &7A81 additional decryption key for main game load (?)
         EQUB    $72,$0C,$A4,$82,$2E,$87,$C2,$60
         EQUB    $51,$56,$08,$C6,$F8,$5B,$AC,$E7
         EQUB    $C7,$6C,$4C,$53,$CC,$D2,$DB,$A7
