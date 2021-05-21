@@ -144,6 +144,8 @@ osbyte  = $FFF4
         BNE     L79EF      
         RTS               \ &79FF
 
+\ Code must match from (here-2) for the decryption of block 0 to work.
+
 .print_Searching                      \ Display 'Searching'
         LDX     #$03
         JMP     printText
